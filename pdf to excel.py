@@ -3,6 +3,7 @@ from tkinter import filedialog
 import PyPDF2
 import re
 import pandas as pd
+from sqlalchemy import create_engine
 
 # Define the function to extract text from a PDF
 def extract_text_from_pdf(pdf_path):
@@ -50,6 +51,21 @@ def process_pdf_files():
 
         df = pd.DataFrame(combined_data)
 
+        # Database connection details
+        db_username = "root"
+        db_password = "abhi"
+        db_host = "127.0.0.1"  # Replace with your MySQL host
+        db_name = "your_database_name"
+        engine = create_engine(f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}/{db_name}")
+
+        # Define the table name where you want to import the DataFrame
+        table_name = "your_table_name"
+
+        # Import the DataFrame into MySQL
+        df.to_sql(table_name, engine, if_exists="replace", index=False)
+
+        print("Data extracted and imported into the database.")
+
         # Enable the "Download Excel" button and pass the DataFrame to the function
         download_excel_button.config(state="normal", command=lambda: download_excel(df))
 
@@ -66,24 +82,25 @@ root.title("PDF Data Processing")
 
 # Define regular expressions for the fields you want to extract
 regex_patterns = {
-   "Transaction Date": r"Date\s*:\s*(\d{2}-\d{2}-\d{4})",
-   "Our Reference Number": r"Our Reference Number\s*:\s*(\S+)",
-   "L/C Number": r"L/C Number\s*:\s*(\S+)",
-   "Amount for INR": r"for\s*:\s*INR ([\d,\.]+)",
-   "Neg/Disc Amount": r"Neg/Disc Amount\s*:\s*INR ([\d,\.]+)",
-   "Invoice Number": r"Invoice Number\s*:\s*(\S+)",
-   "Draft Number": r"Draft Number\s*:\s*(\S+)",
-   "GSTIN NUMBER": r"GSTIN NUMBER\s*:\s*(\S+)",
-   "Amount of Bill": r"Amount of Bill\s*:\s*INR ([\d,\.]+)",
-   "Negotiation Interest": r"Negotiation Interest\s*:\s*INR (\d+)",
-   "Amount Credited": r"Amount Credited\s*:\s*INR ([\d,\.]+)",
-   "Account Credited": r"Account Credited\s*:\s*(\S+)",
-   "Postage/Cable Charge": r"Postage/Cable Charge\s*:\s*INR ([\d,\.]+)",
-   "Other Charges": r"Other Charges\s*:\s*INR ([\d,\.]+)",
-   "Negotiation Commission": r"Negotiation Commission\s*:\s*INR ([\d,\.]+)",
-   "Discrepancy Charges": r"Discrepancy Charges\s*:\s*INR ([\d,\.]+)",
-   "Goods and Service Tax": r"Goods and Service Tax\s*:\s*INR ([\d,\.]+)",
-   "Other Bank Charges": r"Other Bank Charges\s*:\s*INR ([\d,\.]+)",
+    "Transaction Date": r"Date\s*:\s*(\d{2}-\d{2}-\d{4})",
+  "Our Reference Number": r"Our Reference Number\s*:\s*(\S+)",
+  "L/C Number": r"L/C Number\s*:\s*(\S+)",
+  "Amount for INR": r"for\s*:\s*INR ([\d,\.]+)",
+  "Neg/Disc Amount": r"Neg/Disc Amount\s*:\s*INR ([\d,\.]+)",
+  "Invoice Number": r"Invoice Number\s*:\s*(\S+)",
+  "Draft Number": r"Draft Number\s*:\s*(\S+)",
+  "GSTIN NUMBER": r"GSTIN NUMBER\s*:\s*(\S+)",
+  "Amount of Bill": r"Amount of Bill\s*:\s*INR ([\d,\.]+)",
+  "Negotiation Interest": r"Negotiation Interest\s*:\s*INR (\d+)",
+  "Amount Credited": r"Amount Credited\s*:\s*INR ([\d,\.]+)",
+  "Account Credited": r"Account Credited\s*:\s*(\S+)",
+  "Postage/Cable Charge": r"Postage/Cable Charge\s*:\s*INR ([\d,\.]+)",
+  "Other Charges": r"Other Charges\s*:\s*INR ([\d,\.]+)",
+  "Negotiation Commission": r"Negotiation Commission\s*:\s*INR ([\d,\.]+)",
+  "Discrepancy Charges": r"Discrepancy Charges\s*:\s*INR ([\d,\.]+)",
+  "Goods and Service Tax": r"Goods and Service Tax\s*:\s*INR ([\d,\.]+)",
+  "Other Bank Charges": r"Other Bank Charges\s*:\s*INR ([\d,\.]+)",
+   # Add your regular expressions here
     # Add your regular expressions here
 }
 
